@@ -1,0 +1,21 @@
+# Ambiente Virtual
+venv/
+.venv/
+env/
+
+# Configurações sensíveis / Segredos
+.env
+*.env
+
+# Python (Arquivos compilados)
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Banco de dados local (caso use sqlite em testes)
+*.sqlite3
+
+# Arquivos do VS Code / Sistema
+.vscode/
+.DS_Store
+Thumbs.db
