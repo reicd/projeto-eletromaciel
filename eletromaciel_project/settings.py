@@ -34,6 +34,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'corsheaders',  # Adicione o corsheaders aqui
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -41,6 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'rest_framework.authtoken', # Adicione o authtoken para autenticação baseada em token
     'api',
 ]
 
@@ -52,6 +54,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',  # Adicione o CorsMiddleware aqui
 ]
 
 ROOT_URLCONF = 'eletromaciel_project.urls'
@@ -80,14 +83,17 @@ WSGI_APPLICATION = 'eletromaciel_project.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': os.environ.get('DB_NAME'),
-        'USER': os.environ.get('DB_USER'),
-        'PASSWORD': os.environ.get('DB_PASSWORD'),
-        'HOST': os.environ.get('DB_HOST'),
-        'PORT': os.environ.get('DB_PORT'),
+        'NAME': 'db_eletromaciel',
+        'USER': 'root',
+        'PASSWORD':'',  # Insira a senha se houver ,
+        'HOST': '127.0.0.1',
+        'PORT': '3306',
         'OPTIONS': {
             'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
+            
         },
+        # ⏬ ADICIONE ESTA PARTE EXATAMENTE AQUI:
+        
     }
 }
 
@@ -127,3 +133,27 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
+
+# Permite que o WordPress local (e o navegador) faça requisições para a API
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost",
+    "http://127.0.0.1",
+    "http://localhost:8080",  # <-- Adicionando a porta 8080 do XAMPP
+    "http://127.0.0.1:8080",  # <-- Adicionando o IP com a porta 8080
+]
+
+# Se o seu WordPress usa alguma porta específica (ex: http://localhost:8080), adicione ela também:
+# CORS_ALLOWED_ORIGINS += ["http://localhost:8080"]
+CORS_ALLOW_ALL_ORIGINS = True
+# Adicione isso no final do seu settings.py junto com as outras configs de CORS
+CORS_ALLOW_HEADERS = [
+    "accept",
+    "accept-encoding",
+    "authorization",  # <-- ESSA LINHA PERMITE O ENVIO DO TOKEN!
+    "content-type",
+    "dnt",
+    "origin",
+    "user-agent",
+    "x-csrftoken",
+    "x-requested-with",
+]
