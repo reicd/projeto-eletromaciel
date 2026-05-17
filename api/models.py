@@ -262,7 +262,7 @@ class Boleto(models.Model):
     valor_desconto = models.FloatField(blank=True, null=True)
     data_desconto = models.DateField(blank=True, null=True)
     cobrar_multa = models.IntegerField(blank=True, null=True)
-    multa = models.FloatField(blank=True, null=True, db_comment='percentual')
+    multa = models.FloatField(blank=True, null=True, )
     instrucao = models.TextField(blank=True, null=True)
     data_processamento = models.DateField(blank=True, null=True)
     aceite = models.CharField(max_length=1, blank=True, null=True)
@@ -394,7 +394,7 @@ class Cargos(models.Model):
 
 class Cartao(models.Model):
     codigo = models.AutoField(primary_key=True)
-    tipo_cartao = models.IntegerField(blank=True, null=True, db_comment='1-debito 2-credito')
+    tipo_cartao = models.IntegerField(blank=True, null=True, )
     cartao = models.CharField(max_length=30, blank=True, null=True)
     prazo = models.IntegerField(blank=True, null=True)
     taxa = models.FloatField(blank=True, null=True)
@@ -1775,7 +1775,7 @@ class Email(models.Model):
     senha = models.CharField(db_column='Senha', max_length=60, blank=True, null=True)  # Field name made lowercase.
     ssl = models.IntegerField(db_column='SSL', blank=True, null=True)  # Field name made lowercase.
     tls = models.IntegerField(db_column='TLS', blank=True, null=True)  # Field name made lowercase.
-    prioridade = models.IntegerField(db_column='Prioridade', blank=True, null=True, db_comment='0-baixa 1-normal 2-alta')  # Field name made lowercase.
+    prioridade = models.IntegerField(db_column='Prioridade', blank=True, null=True, )  # Field name made lowercase.
     confirmaleitura = models.IntegerField(db_column='ConfirmaLeitura', blank=True, null=True)  # Field name made lowercase.
     emailporhora = models.IntegerField(db_column='EmailPorHora', blank=True, null=True)  # Field name made lowercase.
 
@@ -2096,7 +2096,7 @@ class Expedicaop(models.Model):
     uf = models.CharField(max_length=2, blank=True, null=True)
     observacao = models.CharField(max_length=100, blank=True, null=True)
     obs_expedicao = models.CharField(max_length=200, blank=True, null=True)
-    aguardar_entrega = models.IntegerField(blank=True, null=True, db_comment='0-false 1-true')
+    aguardar_entrega = models.IntegerField(blank=True, null=True, )
     latitude = models.CharField(max_length=20, blank=True, null=True)
     longitude = models.CharField(max_length=20, blank=True, null=True)
     recebedor = models.CharField(max_length=50, blank=True, null=True)
@@ -2580,7 +2580,7 @@ class Linhas(models.Model):
     margem = models.FloatField(db_column='Margem', blank=True, null=True)  # Field name made lowercase.
     comissao = models.FloatField(db_column='Comissao', blank=True, null=True)  # Field name made lowercase.
     promocao = models.FloatField(db_column='Promocao', blank=True, null=True)  # Field name made lowercase.
-    descontotabelacliente = models.IntegerField(db_column='DescontoTabelaCliente', blank=True, null=True, db_comment='0-false 1-true')  # Field name made lowercase.
+    descontotabelacliente = models.IntegerField(db_column='DescontoTabelaCliente', blank=True, null=True, )  # Field name made lowercase.
     sequencia = models.IntegerField(blank=True, null=True)
     lista = models.IntegerField(db_column='Lista', blank=True, null=True)  # Field name made lowercase.
     cadastro = models.DateField(db_column='Cadastro', blank=True, null=True)  # Field name made lowercase.
@@ -2676,7 +2676,7 @@ class Maquinas(models.Model):
     impressora_sep = models.IntegerField(blank=True, null=True)
     impressora_req = models.IntegerField(blank=True, null=True)
     impressora_expedicao = models.IntegerField(blank=True, null=True)
-    imprimir_codigo_produto = models.IntegerField(blank=True, null=True, db_comment='0-false 1-true')
+    imprimir_codigo_produto = models.IntegerField(blank=True, null=True, )
     saida = models.IntegerField(blank=True, null=True)
     vias = models.IntegerField(blank=True, null=True)
     impressora_fecha = models.IntegerField(blank=True, null=True)
@@ -2752,7 +2752,7 @@ class NcmTributacao(models.Model):
 class Ncms(models.Model):
     ncms = models.CharField(max_length=8, blank=True, null=True)
     descricao = models.CharField(max_length=255, blank=True, null=True)
-    setor = models.IntegerField(blank=True, null=True, db_comment='1-Auto Pecas 2-Supermercado')
+    setor = models.IntegerField(blank=True, null=True, )
     cst_icms = models.CharField(max_length=3, blank=True, null=True)
     cst_ipi = models.CharField(max_length=2, blank=True, null=True)
     cst_pis = models.CharField(max_length=2, blank=True, null=True)
@@ -2894,7 +2894,7 @@ class NfeFatura(models.Model):
     cnpjcredcartao = models.CharField(db_column='CNPJCredCartao', max_length=14, blank=True, null=True)  # Field name made lowercase.
     bandeiracartao = models.CharField(db_column='BandeiraCartao', max_length=2, blank=True, null=True)  # Field name made lowercase.
     autorizacaocartao = models.CharField(db_column='AutorizacaoCartao', max_length=20, blank=True, null=True)  # Field name made lowercase.
-    indpag = models.CharField(db_column='IndPag', max_length=2, blank=True, null=True, db_comment='0=A Vista 1= A Prazo')  # Field name made lowercase.
+    indpag = models.CharField(db_column='IndPag', max_length=2, blank=True, null=True, )  # Field name made lowercase.
     descricaooutrosmeios = models.CharField(db_column='DescricaoOutrosMeios', max_length=60, blank=True, null=True)  # Field name made lowercase.
 
     class Meta:
@@ -2969,7 +2969,7 @@ class NfeNotaFiscal(models.Model):
     cnpjintermediador = models.CharField(db_column='CnpjIntermediador', max_length=18, blank=True, null=True)  # Field name made lowercase.
     identifnointermediador = models.CharField(db_column='IdentifNoIntermediador', max_length=60, blank=True, null=True)  # Field name made lowercase.
     indiedestinatario = models.IntegerField(db_column='indIEDestinatario', blank=True, null=True)  # Field name made lowercase.
-    informaenderecoentrega = models.IntegerField(db_column='InformaEnderecoEntrega', blank=True, null=True, db_comment='Informar endereco de entrega')  # Field name made lowercase.
+    informaenderecoentrega = models.IntegerField(db_column='InformaEnderecoEntrega', blank=True, null=True, )  # Field name made lowercase.
     clifor = models.IntegerField(db_column='CliFor', blank=True, null=True)  # Field name made lowercase.
     tipoclifor = models.IntegerField(db_column='TipoCliFor', blank=True, null=True)  # Field name made lowercase.
     nome = models.CharField(db_column='Nome', max_length=60, blank=True, null=True)  # Field name made lowercase.
@@ -3579,7 +3579,7 @@ class OrcamentoProdConsulta(models.Model):
         db_table = 'orcamento_prod_consulta'
 
 
-class Orcamentocondicao(models.Model):
+class OrcamentocondicaoDuplicado(models.Model):
     id = models.AutoField(db_column='ID', primary_key=True)  # Field name made lowercase.
     orcamento = models.IntegerField(db_column='Orcamento', blank=True, null=True)  # Field name made lowercase.
     condicao = models.CharField(db_column='Condicao', max_length=30, blank=True, null=True)  # Field name made lowercase.
@@ -3942,12 +3942,12 @@ class Parametros(models.Model):
     compor_cheque_limite_cliente = models.IntegerField(blank=True, null=True)
     dias_antes_data_cheque = models.IntegerField(blank=True, null=True)
     inf_conta_baixa_banco = models.IntegerField(blank=True, null=True)
-    credito_restrito_cliente_novo = models.IntegerField(blank=True, null=True, db_comment='0 = false / 1 - true')
-    consvendaprodcli = models.IntegerField(db_column='ConsVendaProdCli', blank=True, null=True, db_comment='Consulta de vendas do produto para o cliente')  # Field name made lowercase.
+    credito_restrito_cliente_novo = models.IntegerField(blank=True, null=True, )
+    consvendaprodcli = models.IntegerField(db_column='ConsVendaProdCli', blank=True, null=True, )  # Field name made lowercase.
     checacustomedioentradanf = models.IntegerField(db_column='ChecaCustoMedioEntradaNF', blank=True, null=True)  # Field name made lowercase.
-    pdvmodovenda = models.IntegerField(db_column='PdvModoVenda', blank=True, null=True, db_comment='0 = normal / 1 = alterar val unit do produto')  # Field name made lowercase.
-    pdvmodorecebimento = models.IntegerField(db_column='PdvModoRecebimento', blank=True, null=True, db_comment='0-Por Titulo 1-Por Produto')  # Field name made lowercase.
-    caixageral = models.IntegerField(db_column='CaixaGeral', blank=True, null=True, db_comment='0 = false / 1 = true')  # Field name made lowercase.
+    pdvmodovenda = models.IntegerField(db_column='PdvModoVenda', blank=True, null=True, )  # Field name made lowercase.
+    pdvmodorecebimento = models.IntegerField(db_column='PdvModoRecebimento', blank=True, null=True, )  # Field name made lowercase.
+    caixageral = models.IntegerField(db_column='CaixaGeral', blank=True, null=True, )  # Field name made lowercase.
     promissoriaordemservico = models.IntegerField(db_column='PromissoriaOrdemServico', blank=True, null=True)  # Field name made lowercase.
     vercustotelavenda = models.IntegerField(db_column='VerCustoTelaVenda', blank=True, null=True)  # Field name made lowercase.
     ativastf = models.IntegerField(db_column='AtivaSTF', blank=True, null=True)  # Field name made lowercase.
@@ -4135,7 +4135,7 @@ class Pedidos(models.Model):
     process = models.DateField(db_column='Process', blank=True, null=True)  # Field name made lowercase.
     hora = models.TimeField(db_column='Hora', blank=True, null=True)  # Field name made lowercase.
     empresa = models.IntegerField(db_column='Empresa', blank=True, null=True)  # Field name made lowercase.
-    status = models.IntegerField(db_column='Status', blank=True, null=True, db_comment='0-aberto 1-finalizado')  # Field name made lowercase.
+    status = models.IntegerField(db_column='Status', blank=True, null=True, )  # Field name made lowercase.
 
     class Meta:
         managed = False
@@ -4144,7 +4144,7 @@ class Pedidos(models.Model):
 
 class Pedidosdetalhe(models.Model):
     id = models.AutoField(db_column='ID', primary_key=True)  # Field name made lowercase.
-    status = models.IntegerField(db_column='Status', blank=True, null=True, db_comment='0-aberto 1-finalizado')  # Field name made lowercase.
+    status = models.IntegerField(db_column='Status', blank=True, null=True, )  # Field name made lowercase.
     pedido = models.IntegerField(db_column='Pedido', blank=True, null=True)  # Field name made lowercase.
     codigo = models.CharField(db_column='Codigo', max_length=30, blank=True, null=True)  # Field name made lowercase.
     descricao = models.CharField(db_column='Descricao', max_length=100, blank=True, null=True)  # Field name made lowercase.
@@ -4268,7 +4268,7 @@ class Prodreq(models.Model):
 
 class ProducaoControle(models.Model):
     id = models.AutoField(db_column='ID', primary_key=True)  # Field name made lowercase.
-    situacao = models.IntegerField(db_column='Situacao', blank=True, null=True, db_comment='0-Em Aberto, 1-Em Andamento, 2-Finalizada')  # Field name made lowercase.
+    situacao = models.IntegerField(db_column='Situacao', blank=True, null=True, )  # Field name made lowercase.
     codprod = models.CharField(db_column='CODPROD', max_length=20, blank=True, null=True)  # Field name made lowercase.
     coduniversal = models.CharField(db_column='CODUNIVERSAL', max_length=20, blank=True, null=True)  # Field name made lowercase.
     proddesc = models.CharField(db_column='PRODDESC', max_length=200, blank=True, null=True)  # Field name made lowercase.
@@ -4446,7 +4446,7 @@ class Produtos(models.Model):
     brinde = models.IntegerField(blank=True, null=True)
     pontos_cartao = models.FloatField(blank=True, null=True)
     brinde_ativo = models.IntegerField(blank=True, null=True)
-    controle_lote_estoque = models.IntegerField(blank=True, null=True, db_comment='0-false 1-true')
+    controle_lote_estoque = models.IntegerField(blank=True, null=True, )
     vendaembalagem = models.IntegerField(db_column='VendaEmbalagem', blank=True, null=True)  # Field name made lowercase.
     quantidadeembalagem = models.FloatField(db_column='QuantidadeEmbalagem', blank=True, null=True)  # Field name made lowercase.
     insumoembalagem = models.IntegerField(db_column='InsumoEmbalagem', blank=True, null=True)  # Field name made lowercase.
@@ -4764,7 +4764,7 @@ class Produtosreq(models.Model):
     rps = models.IntegerField(blank=True, null=True)
     nfse = models.IntegerField(blank=True, null=True)
     devolvido = models.CharField(max_length=1, blank=True, null=True)
-    tipodev = models.IntegerField(blank=True, null=True, db_comment='0-Alt, 1-Canc 2-Dev')
+    tipodev = models.IntegerField(blank=True, null=True, )
     quantdev = models.FloatField(blank=True, null=True)
     usuariodev = models.IntegerField(blank=True, null=True)
     funcdev = models.IntegerField(blank=True, null=True)
@@ -4943,7 +4943,7 @@ class Recebimentos(models.Model):
     modelo = models.IntegerField(blank=True, null=True)
     documentofiscal = models.CharField(db_column='DocumentoFiscal', max_length=3, blank=True, null=True)  # Field name made lowercase.
     numerodocumento = models.IntegerField(db_column='NumeroDocumento', blank=True, null=True)  # Field name made lowercase.
-    perdido = models.IntegerField(db_column='Perdido', blank=True, null=True, db_comment='0-false 1-true')  # Field name made lowercase.
+    perdido = models.IntegerField(db_column='Perdido', blank=True, null=True, )  # Field name made lowercase.
     dataperdido = models.DateField(db_column='DataPerdido', blank=True, null=True)  # Field name made lowercase.
     obsperdido = models.CharField(db_column='ObsPerdido', max_length=100, blank=True, null=True)  # Field name made lowercase.
 
@@ -5006,7 +5006,7 @@ class RecebimentosAjuste(models.Model):
     modelo = models.IntegerField(blank=True, null=True)
     documentofiscal = models.CharField(db_column='DocumentoFiscal', max_length=3, blank=True, null=True)  # Field name made lowercase.
     numerodocumento = models.IntegerField(db_column='NumeroDocumento', blank=True, null=True)  # Field name made lowercase.
-    perdido = models.IntegerField(db_column='Perdido', blank=True, null=True, db_comment='0-false 1-true')  # Field name made lowercase.
+    perdido = models.IntegerField(db_column='Perdido', blank=True, null=True, )  # Field name made lowercase.
     dataperdido = models.DateField(db_column='DataPerdido', blank=True, null=True)  # Field name made lowercase.
     obsperdido = models.CharField(db_column='ObsPerdido', max_length=100, blank=True, null=True)  # Field name made lowercase.
 
@@ -5460,7 +5460,7 @@ class SatProduto(models.Model):
 
 
 class Separacao(models.Model):
-    id = models.IntegerField(blank=True, null=True)
+    id = models.IntegerField(db_column='ID', primary_key=True)  # CorreÃ§Ã£o de falha.
     data = models.DateField(blank=True, null=True)
     hora = models.TimeField(blank=True, null=True)
     os = models.IntegerField(blank=True, null=True)
@@ -5809,10 +5809,10 @@ class TintasBases(models.Model):
     mva = models.FloatField(db_column='MVA', blank=True, null=True)  # Field name made lowercase.
     icms_subst = models.FloatField(db_column='ICMS_SUBST', blank=True, null=True)  # Field name made lowercase.
     grupo = models.CharField(db_column='GRUPO', max_length=4, blank=True, null=True)  # Field name made lowercase.
-    preco_prod = models.FloatField(db_column='PRECO_PROD', blank=True, null=True, db_comment='Preço com Imposto')  # Field name made lowercase.
+    preco_prod = models.FloatField(db_column='PRECO_PROD', blank=True, null=True, )  # Field name made lowercase.
     qtd_embal_ml = models.FloatField(db_column='QTD_EMBAL_ML', blank=True, null=True)  # Field name made lowercase.
-    preco_imp_ml = models.FloatField(db_column='PRECO_IMP_ML', blank=True, null=True, db_comment='Preço com Imposto /')  # Field name made lowercase.
-    preco_imp_gr = models.FloatField(db_column='PRECO_IMP_GR', blank=True, null=True, db_comment='Preço com Imposto / (')  # Field name made lowercase.
+    preco_imp_ml = models.FloatField(db_column='PRECO_IMP_ML', blank=True, null=True, )  # Field name made lowercase.
+    preco_imp_gr = models.FloatField(db_column='PRECO_IMP_GR', blank=True, null=True, )  # Field name made lowercase.
 
     class Meta:
         managed = False
