@@ -12,6 +12,13 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 import os
 from pathlib import Path
 from dotenv import load_dotenv
+# 🌟 FORÇAR O DJANGO A DESATIVAR O RECURSO 'RETURNING' COMPATIBILIZANDO COM MARIADB ANTIGO
+from django.db import connections
+from django.db.backends.mysql.base import DatabaseFeatures
+
+# Força o sinalizador de recursos a dizer "Não suportado" para inserções com retorno
+DatabaseFeatures.can_return_rows_from_insert = False
+DatabaseFeatures.can_return_ids_from_insert = False
 
 load_dotenv()
 
@@ -82,7 +89,7 @@ WSGI_APPLICATION = 'eletromaciel_project.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
+        'ENGINE': 'django.db.backends.mysql',   # Use o backend personalizado para MySQL/MariaDB
         'NAME': 'db_eletromaciel',
         'USER': 'root',
         'PASSWORD':'',  # Insira a senha se houver ,
@@ -93,7 +100,7 @@ DATABASES = {
             
         },
         # ⏬ ADICIONE ESTA PARTE EXATAMENTE AQUI:
-        
+        'ASSUME_REAL_SERVER_VERSION': '10.3.0',
     }
 }
 

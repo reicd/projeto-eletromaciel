@@ -1,0 +1,132 @@
+<div id="painel-integracao" style="font-family: sans-serif; max-width: 1000px; margin: 20px auto; padding: 20px;">
+    
+    <div id="cabecalho-catalogo" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+        <h2>📦 Catálogo de Produtos Protegido</h2>
+        <div id="info-usuario" style="font-weight: bold; color: #2c3e50;"></div>
+    </div>
+    
+    <div id="container-busca" style="display: none; margin-bottom: 20px;">
+        <input type="text" id="input-busca" placeholder="🔍 Digite a descrição ou o código do produto..." 
+               style="width: 100%; padding: 12px 15px; font-size: 16px; border: 2px solid #3498db; border-radius: 8px; box-sizing: border-box; outline: none; transition: 0.3s;">
+        <p id="contador-produtos" style="margin: 8px 0 0 5px; font-size: 14px; color: #7f8c8d;"></p>
+    </div>
+    
+    <hr>
+    
+    <div id="lista-produtos" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 15px; margin-top: 20px;">
+        <p id="status-txt">Verificando permissões de acesso...</p>
+    </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const container = document.getElementById('lista-produtos');
+    const infoUsuario = document.getElementById('info-usuario');
+    const containerBusca = document.getElementById('container-busca');
+    const inputBusca = document.getElementById('input-busca');
+    const contadorTxt = document.getElementById('contador-produtos');
+
+    // Array global que vai guardar os produtos na memória do JavaScript
+    let todosOsProdutos = [];
+
+    // 1. CHECAGEM DE SEGURANÇA
+    const usuarioLogado = sessionStorage.getItem('usuario_logado');
+
+    if (!usuarioLogado) {
+        infoUsuario.innerHTML = `<span style="color: #e74c3c;">🚫 Não conectado</span>`;
+        container.innerHTML = `
+            <div style="grid-column: 1 / -1; text-align: center; padding: 30px; border: 2px dashed #e74c3c; border-radius: 8px; background-color: #fdf2f2;">
+                <h3 style="color: #c0392b; margin-top: 0;">Acesso Restrito a Funcionários</h3>
+                <p style="color: #555;">Você precisa realizar o login no sistema para visualizar o estoque da Eletromaciel.</p>
+                <a href="../login-interno-eletromaciel/" style="display: inline-block; margin-top: 10px; padding: 10px 20px; background-color: #3498db; color: white; text-decoration: none; border-radius: 4px; font-weight: bold;">Ir para a Tela de Login</a>
+            </div>
+        `;
+        return;
+    }
+
+    // Se logado, exibe o nome e libera a barra de busca
+    infoUsuario.innerHTML = `👤 Funcionário: <span style="color: #27ae60;">${usuarioLogado}</span>`;
+    containerBusca.style.display = 'block';
+
+    // 2. BUSCA DOS DADOS NA API DJANGO
+    const urlAPI = 'http://127.0.0.1:8000/api/produtos/';
+    const meuToken = 'Token SEU_TOKEN_AQUI'; // ⚠️ Lembre-se de colar o seu Token real aqui!
+
+    fetch(urlAPI, {
+        method: 'GET',
+        headers: {
+            'Authorization': meuToken,
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => {
+        if (!response.ok) throw new Error('Erro na autenticação');
+        return response.json();
+    })
+    .then(produtos => {
+        todosOsProdutos = produtos; // Guarda os produtos na nossa variável global
+        renderizarProdutos(todosOsProdutos); // Desenha todos na tela inicialmente
+    })
+    .catch(error => {
+        console.error('Erro:', error);
+        container.innerHTML = `<p style="color: #e74c3c; grid-column: 1 / -1;">Erro ao conectar com o servidor de estoque.</p>`;
+    });
+
+    // 3. FUNÇÃO QUE DESENHA OS CARDS NA TELA (REUTILIZÁVEL)
+    function renderizarProdutos(lista) {
+        container.innerHTML = '';
+        
+        // Atualiza o contador de itens encontrados
+        if (lista.length === 1) {
+            contadorTxt.innerText = `1 produto encontrado.`;
+        } else {
+            contadorTxt.innerText = `${lista.length} produtos encontrados.`;
+        }
+
+        if (lista.length === 0) {
+            container.innerHTML = `<p style="grid-column: 1 / -1; color: #7f8c8d; text-align: center; margin-top: 20px;">Nenhum produto corresponde à sua busca.</p>`;
+            return;
+        }
+
+        lista.forEach(prod => {
+            const card = document.createElement('div');
+            card.style.border = '1px solid #ddd';
+            card.style.padding = '15px';
+            card.style.borderRadius = '8px';
+            card.style.backgroundColor = '#fff';
+            card.style.boxShadow = '0 2px 4px rgba(0,0,0,0.05)';
+            card.style.transition = 'transform 0.2s';
+            
+            // Efeito visual ao passar o mouse (Mundo 4 - Capricho visual!)
+            card.onmouseenter = () => card.style.transform = 'scale(1.02)';
+            card.onmouseleave = () => card.style.transform = 'scale(1.0)';
+
+            card.innerHTML = `
+                <strong style="color: #2c3e50; display: block; margin-bottom: 5px; font-size: 16px;">${prod.descricao}</strong>
+                <small style="color: #7f8c8d; display: block; margin-bottom: 10px;">Código: ${prod.codigo}</small>
+                <div style="font-weight: bold; color: #27ae60; background-color: #e8f8f5; padding: 5px 10px; border-radius: 4px; display: inline-block;">
+                    Estoque: ${prod.estoque} un
+                </div>
+            `;
+            container.appendChild(card);
+        });
+    }
+
+    // 4. EVENTO ESCUTADOR (Mundo 4 - Manipulação de Eventos String)
+    // O evento 'input' roda em tempo real a cada tecla digitada!
+    inputBusca.addEventListener('input', function(e) {
+        const termoBusca = e.target.value.toLowerCase().trim();
+
+        // Filtra a lista principal comparando a descrição ou o código
+        const produtosFiltrados = todosOsProdutos.filter(prod => {
+            const descricaoBate = prod.descricao.toLowerCase().includes(termoBusca);
+            const codigoBate = prod.codigo.toLowerCase().includes(termoBusca);
+            
+            return descricaoBate || codigoBate; // Retorna se achar em um ou em outro
+        });
+
+        // Redesenha a tela apenas com os que passaram no filtro
+        renderizarProdutos(produtosFiltrados);
+    });
+});
+</script>
