@@ -4,7 +4,9 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated  # <-- Garanta esta importação
 from rest_framework.authentication import TokenAuthentication  # <-- Garanta esta importação
-
+from rest_framework.authtoken.models import Token
+from django.contrib.auth.models import User
+from django.contrib.auth import authenticate
 from django.db import connection
 from .models import Produtos, Usuarios
 from .serializers import ProdutosSerializer, UsuariosSerializer
@@ -70,19 +72,48 @@ class LoginIntegradoView(APIView):
     def post(self, request):
         username_enviado = request.data.get('login')
         senha_enviada = request.data.get('senha')
+
+        # ----------------------------------------------------
+        # 🛡️ CAMINHO 1: Tentar autenticar pela tabela ANTIGA (Legada)
+        # ----------------------------------------------------
         try:
-            # 🎯 Buscamos direto na tabela 'usuarios' do banco antigo!
-            usuario = Usuarios.objects.get(usuario=username_enviado)
+            usuario_antigo = Usuarios.objects.get(login=username_enviado)
             
-            # Comparação direta da senha em texto limpo (como funcionava antes)
-            if usuario.senha == senha_enviada:
+            # Comparação em texto limpo do sistema antigo
+            if usuario_antigo.senha == senha_enviada:
+                username_base = usuario_antigo.login or usuario_antigo.usuario
+                user_django, _ = User.objects.get_or_create(username=username_base)
+                token, _ = Token.objects.get_or_create(user=user_django)
+
                 return Response({
-                    'mensagem': 'Login realizado com sucesso!',
-                    'usuario': usuario.usuario,
-                    'permissao': usuario.permissao  # Retorna o que estiver na tabela (ex: 'admin', 'funcionario')
+                    'mensagem': 'Login realizado com sucesso! (Base Antiga)',
+                    'token': token.key,
+                    'usuario': usuario_antigo.usuario,
+                    'permissao': usuario_antigo.permissao
                 }, status=status.HTTP_200_OK)
             else:
                 return Response({'erro': 'Senha incorreta.'}, status=status.HTTP_401_UNAUTHORIZED)
-                
+
         except Usuarios.DoesNotExist:
-            return Response({'erro': 'Usuário não encontrado.'}, status=status.HTTP_404_NOT_FOUND)
+            # Se não achou na tabela antiga, o fluxo continua para o Caminho 2!
+            pass
+
+        # ----------------------------------------------------
+        # 🛡️ CAMINHO 2: Tentar autenticar pela tabela NOVA (Django)
+        # ----------------------------------------------------
+        # O 'authenticate' checa o username e valida o hash da senha automaticamente
+        user_django = authenticate(username=username_enviado, password=senha_enviada)
+
+        if user_django is not None:
+            token, _ = Token.objects.get_or_create(user=user_django)
+            return Response({
+                'mensagem': 'Login realizado com sucesso! (Base Nova/Admin)',
+                'token': token.key,
+                'usuario': user_django.username,
+                'permissao': 'admin' if user_django.is_superuser else 'user'
+            }, status=status.HTTP_200_OK)
+
+        # ----------------------------------------------------
+        # ❌ FIM DA CASCATA: Se não passou em nenhum dos dois
+        # ----------------------------------------------------
+        return Response({'erro': 'Usuário não encontrado em nenhuma das bases.'}, status=status.HTTP_404_NOT_FOUND)

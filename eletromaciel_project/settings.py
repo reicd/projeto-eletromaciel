@@ -15,6 +15,8 @@ from dotenv import load_dotenv
 # 🌟 FORÇAR O DJANGO A DESATIVAR O RECURSO 'RETURNING' COMPATIBILIZANDO COM MARIADB ANTIGO
 from django.db import connections
 from django.db.backends.mysql.base import DatabaseFeatures
+from django.db.backends.signals import connection_created
+from django.dispatch import receiver
 
 # Força o sinalizador de recursos a dizer "Não suportado" para inserções com retorno
 DatabaseFeatures.can_return_rows_from_insert = False
@@ -51,17 +53,19 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken', # Adicione o authtoken para autenticação baseada em token
     'api',
+
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',  # O CorsMiddleware deve vir antes do CommonMiddleware
     'django.middleware.security.SecurityMiddleware',
+    'corsheaders.middleware.CorsMiddleware',  # O CorsMiddleware deve vir antes do CommonMiddleware
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'corsheaders.middleware.CorsMiddleware',  # Adicione o CorsMiddleware aqui
 ]
 
 ROOT_URLCONF = 'eletromaciel_project.urls'
@@ -96,7 +100,7 @@ DATABASES = {
         'HOST': '127.0.0.1',
         'PORT': '3306',
         'OPTIONS': {
-            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
+            'init_command': "SET sql_mode=''",
             
         },
         # ⏬ ADICIONE ESTA PARTE EXATAMENTE AQUI:
@@ -151,7 +155,7 @@ CORS_ALLOWED_ORIGINS = [
 
 # Se o seu WordPress usa alguma porta específica (ex: http://localhost:8080), adicione ela também:
 # CORS_ALLOWED_ORIGINS += ["http://localhost:8080"]
-CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_ALL_ORIGINS = False  # Alterado para False para que o Django respeite a lista CORS_ALLOWED_ORIGINS
 # Adicione isso no final do seu settings.py junto com as outras configs de CORS
 CORS_ALLOW_HEADERS = [
     "accept",
@@ -164,3 +168,19 @@ CORS_ALLOW_HEADERS = [
     "x-csrftoken",
     "x-requested-with",
 ]
+# ==============================================================================
+# 🎯 TRAVA GLOBAL CONTRA O BUG DO RETURNING (COMPATIBILIDADE MARIADB 10.4)
+# ==============================================================================
+
+
+@receiver(connection_created)
+def disable_returning_features(sender, connection, **kwargs):
+    """
+    Sinal global interceptado sempre que o Django abre QUALQUER conexão com o banco.
+    Isso força o desligamento do RETURNING inclusive nos comandos de terminal (migrate).
+    """
+    if connection.vendor == 'mysql':
+        connection.features.can_return_rows_from_insert = False
+        connection.features.can_return_ids_from_insert = False
+
+CORS_ALLOW_ALL_ORIGINS = True
