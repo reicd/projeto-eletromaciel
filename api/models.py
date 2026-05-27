@@ -4451,10 +4451,14 @@ class Produtos(models.Model):
     quantidadeembalagem = models.FloatField(db_column='QuantidadeEmbalagem', blank=True, null=True)  # Field name made lowercase.
     insumoembalagem = models.IntegerField(db_column='InsumoEmbalagem', blank=True, null=True)  # Field name made lowercase.
     vendadigital = models.IntegerField(db_column='VendaDigital', blank=True, null=True)  # Field name made lowercase.
+    nova_imagem = models.ImageField(upload_to='produtos_fotos/', null=True, blank=True)
+    descricao_acessivel = models.TextField(blank=True, null=True)
 
     class Meta:
         managed = False
         db_table = 'produtos'
+        verbose_name = 'Produto'
+        verbose_name_plural = 'Produtos'
 
 
 class ProdutosKit(models.Model):
@@ -4568,11 +4572,57 @@ class Produtoscond(models.Model):
     reduzido = models.CharField(max_length=30, blank=True, null=True)
     id_kit = models.IntegerField(blank=True, null=True)
     empresa = models.IntegerField(db_column='Empresa', blank=True, null=True)  # Field name made lowercase.
+    # ... todas as colunas anteriores permanecem idênticas ...
+    foto = models.CharField(db_column='Foto', max_length=200, blank=True, null=True)  # Manter original
+    empresa = models.IntegerField(db_column='Empresa', blank=True, null=True)
+    etiqueta = models.IntegerField(db_column='Etiqueta', blank=True, null=True)
+    lista = models.IntegerField(db_column='Lista', blank=True, null=True)
+    alteraos = models.IntegerField(db_column='AlteraOS', blank=True, null=True)
+    alteravenda = models.IntegerField(db_column='AlteraVenda', blank=True, null=True)
+    alteraorcamento = models.IntegerField(db_column='AlteraOrcamento', blank=True, null=True)
+    alteracustovenda = models.IntegerField(db_column='AlteraCustoVenda', blank=True, null=True)
+    controlado = models.IntegerField(db_column='Controlado', blank=True, null=True)
+    ativo = models.IntegerField(db_column='Ativo', blank=True, null=True)
+    stf = models.FloatField(db_column='Stf', blank=True, null=True)
+    dataf = models.DateField(db_column='DataF', blank=True, null=True)
+    preindice = models.CharField(max_length=3, blank=True, null=True)
+    preatac = models.FloatField(blank=True, null=True)
+    prevar = models.FloatField(blank=True, null=True)
+    premec = models.FloatField(blank=True, null=True)
+    ncms = models.CharField(max_length=8, blank=True, null=True)
+    cest = models.CharField(db_column='Cest', max_length=7, blank=True, null=True)
+    iva = models.FloatField(blank=True, null=True)
+    icms_intra = models.FloatField(blank=True, null=True)
+    c_janeiro = models.FloatField(blank=True, null=True)
+    c_fevereiro = models.FloatField(blank=True, null=True)
+    c_marco = models.FloatField(blank=True, null=True)
+    c_abril = models.FloatField(blank=True, null=True)
+    c_maio = models.FloatField(blank=True, null=True)
+    c_junho = models.FloatField(blank=True, null=True)
+    c_julho = models.FloatField(blank=True, null=True)
+    c_agosto = models.FloatField(blank=True, null=True)
+    c_setembro = models.FloatField(blank=True, null=True)
+    c_outubro = models.FloatField(blank=True, null=True)
+    c_novembro = models.FloatField(blank=True, null=True)
+    c_dezembro = models.FloatField(blank=True, null=True)
+    brinde = models.IntegerField(blank=True, null=True)
+    pontos_cartao = models.FloatField(blank=True, null=True)
+    brinde_ativo = models.IntegerField(blank=True, null=True)
+    controle_lote_estoque = models.IntegerField(blank=True, null=True)
+    vendaembalagem = models.IntegerField(db_column='VendaEmbalagem', blank=True, null=True)
+    quantidadeembalagem = models.FloatField(db_column='QuantidadeEmbalagem', blank=True, null=True)
+    insumoembalagem = models.IntegerField(db_column='InsumoEmbalagem', blank=True, null=True)
+    vendadigital = models.IntegerField(db_column='VendaDigital', blank=True, null=True)
+
+    # 🚀 NOVOS CAMPOS PARA O TRABALHO LIMPO E ACESSIBILIDADE PcD ♿
+    nova_imagem = models.ImageField(upload_to='produtos_fotos/', null=True, blank=True)
+    descricao_acessivel = models.TextField(blank=True, null=True)
 
     class Meta:
-        managed = False
-        db_table = 'produtoscond'
+        managed = False  # Continua como False para o Django não tentar recriar a tabela legada
+        db_table = 'produtos'
 
+    
 
 class Produtosfiscais(models.Model):
     id = models.AutoField(db_column='ID', primary_key=True)  # Field name made lowercase.

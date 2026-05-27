@@ -184,3 +184,6 @@ def disable_returning_features(sender, connection, **kwargs):
         connection.features.can_return_ids_from_insert = False
 
 CORS_ALLOW_ALL_ORIGINS = True
+# 🎯 Define a pasta raiz onde as fotos do WordPress serão salvas fisicamente
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

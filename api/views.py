@@ -4,12 +4,14 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated  # <-- Garanta esta importação
 from rest_framework.authentication import TokenAuthentication  # <-- Garanta esta importação
+from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.authtoken.models import Token
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
 from django.db import connection
 from .models import Produtos, Usuarios
-from .serializers import ProdutosSerializer, UsuariosSerializer
+from .serializers import ProdutosSerializer, UsuariosSerializer, CadastroProdutoSerializer
+from rest_framework.parsers import MultiPartParser, FormParser
 
 
 #1. CATÁLOGO PROTEGIDO
@@ -70,50 +72,37 @@ class LoginIntegradoView(APIView):
     permission_classes = []
 
     def post(self, request):
-        username_enviado = request.data.get('login')
+        username_enviado = request.data.get('usuario')
         senha_enviada = request.data.get('senha')
 
-        # ----------------------------------------------------
-        # 🛡️ CAMINHO 1: Tentar autenticar pela tabela ANTIGA (Legada)
-        # ----------------------------------------------------
-        try:
-            usuario_antigo = Usuarios.objects.get(login=username_enviado)
+        # 🎯 O Django agora valida TODO MUNDO em uma única linha, usando criptografia!
+        user = authenticate(username=username_enviado, password=senha_enviada)
+
+        if user is not None:
+            # Pega ou gera o Token de segurança amarrado ao usuário
+            token, _ = Token.objects.get_or_create(user=user)
             
-            # Comparação em texto limpo do sistema antigo
-            if usuario_antigo.senha == senha_enviada:
-                username_base = usuario_antigo.login or usuario_antigo.usuario
-                user_django, _ = User.objects.get_or_create(username=username_base)
-                token, _ = Token.objects.get_or_create(user=user_django)
-
-                return Response({
-                    'mensagem': 'Login realizado com sucesso! (Base Antiga)',
-                    'token': token.key,
-                    'usuario': usuario_antigo.usuario,
-                    'permissao': usuario_antigo.permissao
-                }, status=status.HTTP_200_OK)
-            else:
-                return Response({'erro': 'Senha incorreta.'}, status=status.HTTP_401_UNAUTHORIZED)
-
-        except Usuarios.DoesNotExist:
-            # Se não achou na tabela antiga, o fluxo continua para o Caminho 2!
-            pass
-
-        # ----------------------------------------------------
-        # 🛡️ CAMINHO 2: Tentar autenticar pela tabela NOVA (Django)
-        # ----------------------------------------------------
-        # O 'authenticate' checa o username e valida o hash da senha automaticamente
-        user_django = authenticate(username=username_enviado, password=senha_enviada)
-
-        if user_django is not None:
-            token, _ = Token.objects.get_or_create(user=user_django)
             return Response({
-                'mensagem': 'Login realizado com sucesso! (Base Nova/Admin)',
+                'mensagem': 'Login realizado com sucesso!',
                 'token': token.key,
-                'usuario': user_django.username,
-                'permissao': 'admin' if user_django.is_superuser else 'user'
+                'usuario': user.username,
+                'permissao': 'admin' if user.is_superuser else 'user'
             }, status=status.HTTP_200_OK)
 
-        # ----------------------------------------------------
-        # ❌ FIM DA CASCATA: Se não passou em nenhum dos dois
-        # ----------------------------------------------------
-        return Response({'erro': 'Usuário não encontrado em nenhuma das bases.'}, status=status.HTTP_404_NOT_FOUND)
+        # Se o authenticate retornar None, significa que o usuário não existe ou a senha errou
+        return Response({'erro': 'Usuário ou senha incorretos.'}, status=status.HTTP_401_UNAUTHORIZED)
+class CadastroProdutoView(APIView):
+    # 🔒 Segurança: Apenas funcionários logados (como o LUCIANO) podem cadastrar
+    permission_classes = [IsAuthenticated] 
+    parser_classes = [MultiPartParser, FormParser]  # Permite receber imagens do formulário
+
+    def post(self, request):
+        serializer = CadastroProdutoSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({
+                'mensagem': 'Produto cadastrado com sucesso!',
+                'dados': serializer.data
+            }, status=status.HTTP_201_CREATED)
+        
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

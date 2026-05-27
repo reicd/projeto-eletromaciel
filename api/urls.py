@@ -1,6 +1,6 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import ProdutosViewSet, UsuariosViewSet, LoginIntegradoView
+from .views import ProdutosViewSet, UsuariosViewSet, LoginIntegradoView, CadastroProdutoView  # 🎯 Adicionei a nova View aqui!
 
 router = DefaultRouter()
 router.register(r'produtos', ProdutosViewSet)
@@ -13,4 +13,5 @@ urlpatterns = [
     
     # Rotas automáticas do roteador (produtos e usuarios)
     path('', include(router.urls)),
+    path('produtos/cadastrar/', CadastroProdutoView.as_view(), name='cadastrar_produto'),
 ]
